@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'my-app',
@@ -10,67 +11,6 @@ export class AppComponent {
   private clicksColor:string="rgb(41, 128, 185)";
   private valuesColor:string="#777";
 
-	private customTooltips = function(tooltip) {
-			// Tooltip Element
-			var tooltipEl = document.getElementById('chartjs-tooltip');
-			if (!tooltipEl) {
-				tooltipEl = document.createElement('div');
-				tooltipEl.id = 'chartjs-tooltip';
-				tooltipEl.innerHTML = '<table></table>';
-				this._chart.canvas.parentNode.appendChild(tooltipEl);
-			}
-			// Hide if no tooltip
-			if (tooltip.opacity === 0) {
-				tooltipEl.style.opacity = 0;
-				return;
-			}
-			// Set caret Position
-			tooltipEl.classList.remove('above', 'below', 'no-transform');
-			if (tooltip.yAlign) {
-				tooltipEl.classList.add(tooltip.yAlign);
-			} else {
-				tooltipEl.classList.add('no-transform');
-			}
-			function getBody(bodyItem) {
-				return bodyItem.lines;
-			}
-			// Set Text
-			if (tooltip.body) {
-				var titleLines = tooltip.title || [];
-				var bodyLines = tooltip.body.map(getBody);
-				var innerHtml = '<thead>';
-				titleLines.forEach(function(title) {
-					innerHtml += '<tr><th>' + title + '</th></tr>';
-				});
-				innerHtml += '</thead><tbody>';
-				bodyLines.forEach(function(body, i) {
-					var colors = tooltip.labelColors[i];
-					var style = 'background:' + colors.backgroundColor;
-					style += '; border-color:' + colors.borderColor;
-					style += '; border-width: 2px';
-					var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
-					innerHtml += '<tr><td>' + span + body + '</td></tr>';
-				});
-				innerHtml += '</tbody>';
-				var tableRoot = tooltipEl.querySelector('table');
-				tableRoot.innerHTML = innerHtml;
-			}
-			var positionY = this._chart.canvas.offsetTop;
-			var positionX = this._chart.canvas.offsetLeft;
-			// Display, position, and set styles for font
-			tooltipEl.style.opacity = 1;
-			tooltipEl.style.left = positionX + tooltip.caretX + 'px';
-			tooltipEl.style.top = positionY + tooltip.caretY + 'px';
-			tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
-			tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
-			tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
-			tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
-		};
-
-
-
-  
-  
   public barChartOptions: ChartOptions = {
     responsive: true,
     tooltips: {
@@ -84,19 +24,19 @@ export class AppComponent {
         displayColors:false,
         caretSize:0,
         callbacks: {
-            labelTextColor: (tooltipItem, chart) => {
+            labelTextColor: function(tooltipItem, chart) {
               if(tooltipItem.datasetIndex ==1)
-                return this.sharesColor;
+                return "rgb(223, 163, 161)";
               else
-                return this.clicksColor;
+                return "rgb(41, 128, 185)";
             }
         }
     },
     layout: {
         padding: {
-            left: 10,
+            left: 0,
             right: 0,
-            top: 10,
+            top: 0,
             bottom: 0
         }
     },
@@ -105,32 +45,58 @@ export class AppComponent {
             // This more specific font property overrides the global property
             fontColor: this.valuesColor,
             fontSize: 12         
-        }
+        },
+        display:false
     },
     scales: {
         xAxes: [{
             position: "bottom",
-            barPercentage: 1,
-            minBarLength: 2,
+            barPercentage: 0.9,
             gridLines: {
                 offsetGridLines: true,
                 display: false
             },
             ticks: {
-              fontColor: this.valuesColor, // this here
+              fontColor: this.valuesColor,
+              callback: function(value, index, values) {
+                  //if(index%2 == 0)
+                    return value;
+                  //return undefined;
+               },
+               autoSkip: true,
+               maxRotation: 0,
+               minRotation: 0
             }
         }],
         yAxes: [{
             gridLines: {
                 offsetGridLines: true
             },
-            scaleLabel: {
-              display: false,
-              labelString: "Time in Seconds",
-              fontColor: "red"
-            },
-            ticks: {
-              fontColor: this.valuesColor, // this here
+          type:'linear',
+          id:'left-axis',
+          scaleLabel: {
+            display: false, labelString: 'Clicks',
+            labelColor : this.clicksColor
+
+          },
+          display: true,
+          ticks: {
+              fontColor: this.valuesColor
+            }
+        },{
+          type:'linear',
+          id:'right-axis',
+          display: true,
+          position: 'right',
+          stacked:false,
+          scaleLabel: {
+            display: false, 
+            labelString: 'Partages',
+            labelColor : this.sharesColor},
+          gridLines: {drawOnChartArea:false},
+          ticks: {
+              fontColor: this.valuesColor
+              
             }
         }]
     }
@@ -141,23 +107,25 @@ export class AppComponent {
   // Load chart data and styles
   public barChartData: ChartDataSets[] = [
     { 
-        data: [1, 2, 3, 0, 10, 6, 5], 
+        data: [1, 200, 3, 10, 10, 6, 5, 20], 
         label: 'Clicks', 
         type: 'line',
         fill: false,
         pointBackgroundColor:this.clicksColor,
         pointBorderColor:this.clicksColor,
-        pointHoverBorderWidth: 5        
+        pointHoverBorderWidth: 5,
+        yAxisID: 'left-axis'
     },
     /*{ data: [1, 2, 3], label: 'Accepted', stack: 'a' },
     { data: [1, 2, 3], label: 'Open', stack: 'a' },
     { data: [1, 2, 3], label: 'In Progress', stack: 'a' },*/
     {
-        data: [1, 2, 3, 8, 3, 4, 12], 
+        data: [1, 2, 3, 8, 3, 4, 12,15], 
         label: 'Shares', 
         type: 'bar', 
         borderColor: "rgb(223, 163, 161)",
-        backgroundColor: "rgb(223, 163, 161)"    
+        backgroundColor: "rgb(223, 163, 161)",
+        yAxisID: 'right-axis'    
     }
   ];
 
@@ -173,16 +141,59 @@ export class AppComponent {
   ];
 
   // Load labels, ex : time slots
-  public barChartLabels: string[] = ['L', 'M', 'M', 'J', 'Vendredi', 'S', 'D'];
+  public barChartLabels: string[] = ['LLLLLLLL', 'MMMMMMM', 'MMMMMMM', 'JJJJJJ', 'Vendredi', 'DDDDDDDD','LLLLLLL',];
 
-  constructor() { }
+  constructor() { 
+    
+  }
 
   ngOnInit() {
+    /*Chart.pluginService.register({
+      afterDraw: function (chart) {
+        return;
+        if (chart.config.options.scales.yAxes) {
+          //Get ctx from string
+          var ctx = chart.chart.ctx;
+
+          var config = chart.config.options.scales.yAxes;
+          var txt = config[0].scaleLabel.labelString;
+          var txt2 = config[1].scaleLabel.labelString;
+          var color = config[0].scaleLabel.labelColor || '#000';
+          var color2 = config[1].scaleLabel.labelColor || '#000';
+
+          var positionX1 = chart.chartArea.left + 10;
+          var positionX2 = chart.chartArea.right - 50;
+          var positionY1 = (chart.chartArea.top - 10);
+          ctx.font = "12px Arial";
+
+          ctx.fillStyle = color;
+          ctx.fillText(txt, positionX1, positionY1);
+
+          ctx.fillStyle = color2;
+          ctx.fillText(txt2, positionX2, positionY1);
+        }
+      }
+    });  
+    */
   }
 
   // events
   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-      //console.log(active);
+    if(!active)
+      return;
+
+    if(active.length <2)
+      return;
+
+    var pointClick = active[0];
+    var pointShare = active[1];
+    var chart = pointClick["_chart"];
+    if(!chart)
+      return;
+    var clickValue = chart.data.datasets[pointClick["_datasetIndex"]].data[pointClick["_index"]];
+    var shareValue = chart.data.datasets[pointShare["_datasetIndex"]].data[pointShare["_index"]];
+    
+    console.log("Click value: ", clickValue,"Share value: ", shareValue);
   }
 
   public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
