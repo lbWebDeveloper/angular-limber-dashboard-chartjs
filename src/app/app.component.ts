@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Chart } from 'chart.js';
+import moment = require('moment');
 
 @Component({
   selector: 'my-app',
@@ -7,6 +8,36 @@ import { Chart } from 'chart.js';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
+  public daterange: any = {};
+
+  // see original project for full list of options
+  // can also be setup using the config service to apply to multiple pickers
+  public options: any = {
+      locale: { format: 'YYYY-MM-DD' },
+      alwaysShowCalendars: false,
+      ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      }
+  };
+
+  public selectedDate(value: any, datepicker?: any) {
+      // any object can be passed to the selected event and it will be passed back here
+      datepicker.start = value.start;
+      datepicker.end = value.end;
+
+      // or manupulat your own internal property
+      this.daterange.start = value.start;
+      this.daterange.end = value.end;
+      this.daterange.label = value.label;
+      this.randomize();
+  }
+
   private sharesColor:string = "rgb(223, 163, 161)";
   private clicksColor:string="rgb(41, 128, 185)";
   private valuesColor:string="#777";

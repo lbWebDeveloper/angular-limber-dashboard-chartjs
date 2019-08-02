@@ -1,4 +1,9 @@
 <div class="row">
+  <div class="col-md-2">
+  </div>
+  <div class="col-md-8">
+    <input type="text" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event, daterange)" />
+  </div>
   <div class="col-md-12">
     <div style="display: block">
       <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
@@ -8,4 +13,5 @@
     </div>
     <button mat-button (click)="randomize()">Update</button>
   </div>
+
 </div>
