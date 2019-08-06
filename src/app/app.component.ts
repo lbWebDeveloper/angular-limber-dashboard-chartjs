@@ -55,11 +55,11 @@ export class AppComponent {
         displayColors:false,
         caretSize:0,
         callbacks: {
-            labelTextColor: function(tooltipItem, chart) {
+            labelTextColor: (tooltipItem, chart) => {
               if(tooltipItem.datasetIndex ==1)
-                return "rgb(223, 163, 161)";
+                return this.sharesColor;
               else
-                return "rgb(41, 128, 185)";
+                return this.clicksColor;
             }
         }
     },
