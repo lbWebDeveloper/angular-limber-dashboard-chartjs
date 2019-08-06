@@ -112,7 +112,8 @@ export class AppComponent {
           },
           display: true,
           ticks: {
-              fontColor: this.valuesColor
+              fontColor: this.valuesColor,
+              beginAtZero: true
             }
         },{
           type:'linear',
@@ -132,16 +133,19 @@ export class AppComponent {
         }]
     }
   };
+
   public barChartType: ChartType = 'bar';
   public barChartLegend = true;
 
   // Load chart data and styles
   public barChartData: ChartDataSets[] = [
     { 
-        data: [1, 200, 3, 10, 10, 6, 5, 20], 
+        //data: [1, 200, 3, 10, 10, 6, 5, 20], 
+        data: [0, 0, 0, 0, 0, 0, 0, 0], 
         label: 'Clicks', 
         type: 'line',
         fill: false,
+        hidden: false,
         pointBackgroundColor:this.clicksColor,
         pointBorderColor:this.clicksColor,
         pointHoverBorderWidth: 5,
@@ -154,8 +158,8 @@ export class AppComponent {
         data: [1, 2, 3, 8, 3, 4, 12,15], 
         label: 'Shares', 
         type: 'bar', 
-        borderColor: "rgb(223, 163, 161)",
-        backgroundColor: "rgb(223, 163, 161)",
+        borderColor: this.sharesColor,
+        backgroundColor: this.sharesColor,
         yAxisID: 'right-axis'    
     }
   ];
