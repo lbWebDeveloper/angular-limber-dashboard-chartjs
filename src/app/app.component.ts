@@ -178,11 +178,237 @@ export class AppComponent {
   // Load labels, ex : time slots
   public barChartLabels: string[] = ['LLLLLLLL', 'MMMMMMM', 'MMMMMMM', 'JJJJJJ', 'Vendredi', 'DDDDDDDD','LLLLLLL',];
 
+  public getChartDefaultOptions(maxClicks? :number,maxPushes?:number) : ChartOptions {
+    if(!maxClicks)
+      maxClicks =0;
+    if(!maxPushes)
+      maxPushes =0;
+    maxClicks = maxClicks + (8 - maxClicks %4);
+    maxPushes = maxPushes + (8 - maxPushes %4);
+    let clicksStep = Math.round(maxClicks/4);
+    let pushesStep = Math.round(maxPushes/4);
+
+    /*{
+    responsive: true,
+    tooltips: {
+        mode: 'x',
+        intersect:false,
+        position:'nearest',
+        backgroundColor:'rgba(255, 255, 255, 0.9)',
+        borderColor:'#CCC',
+        borderWidth:1,
+        titleFontColor:this.valuesColor,
+        displayColors:false,
+        caretSize:0,
+        callbacks: {
+            labelTextColor: (tooltipItem, chart) => {
+              if(tooltipItem.datasetIndex ==1)
+                return this.sharesColor;
+              else
+                return this.clicksColor;
+            }
+        }
+    },
+    layout: {
+        padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        }
+    },
+    legend: {
+        labels: {
+            // This more specific font property overrides the global property
+            fontColor: this.valuesColor,
+            fontSize: 12         
+        },
+        display:false
+    },
+    scales: {
+        xAxes: [{
+            position: "bottom",
+            barPercentage: 0.9,
+            gridLines: {
+                offsetGridLines: true,
+                display: false
+            },
+            ticks: {
+              fontColor: this.valuesColor,
+              callback: function(value, index, values) {
+                  //if(index%2 == 0)
+                    return value;
+                  //return undefined;
+               },
+               autoSkip: true,
+               maxRotation: 0,
+               minRotation: 0
+            }
+        }],
+        yAxes: [{
+            gridLines: {
+                offsetGridLines: true
+            },
+          type:'linear',
+          id:'left-axis',
+          scaleLabel: {
+            display: false, labelString: 'Clicks',
+            labelColor : this.clicksColor
+
+          },
+          display: true,
+          ticks: {
+              fontColor: this.valuesColor,
+              beginAtZero: true
+            }
+        },{
+          type:'linear',
+          id:'right-axis',
+          display: true,
+          position: 'right',
+          stacked:false,
+          scaleLabel: {
+            display: false, 
+            labelString: 'Partages',
+            labelColor : this.sharesColor},
+          gridLines: {drawOnChartArea:false},
+          ticks: {
+              fontColor: this.valuesColor
+              
+            }
+        }]
+    }
+  }*/
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+          mode: 'x',
+          intersect:false,
+          position:'nearest',
+          backgroundColor:'rgba(255, 255, 255, 0.9)',
+          borderColor:'#CCC',
+          borderWidth:1,
+          titleFontColor:this.valuesColor,
+          displayColors:false,
+          caretSize:0,
+          callbacks: {
+              labelTextColor: (tooltipItem, chart) => {
+                if(tooltipItem.datasetIndex ==1)
+                  return this.sharesColor;
+                else
+                  return this.clicksColor;
+              }
+          }
+      },
+      layout: {
+          padding: {
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0
+          }
+      },
+      legend: {
+          labels: {
+              fontColor: this.valuesColor,
+              fontSize: 12
+          },
+          display:false
+      },
+      scales: {
+          xAxes: [{
+              position: "bottom",
+              barPercentage: 0.9,
+              gridLines: {
+                  offsetGridLines: true,
+                  display: false
+              },
+              ticks: {
+                fontColor: this.valuesColor,
+                callback: (value, index, values) => {
+                  const result = "sdssds";
+                  return "    "+result+"    ";
+                  //return result;
+                },
+                autoSkip: true,
+                maxRotation: 0,
+                minRotation: 0
+              }
+          }],
+          yAxes: [{
+              gridLines: {
+                  offsetGridLines: false, // Diff
+                  display: true, // Diff none
+                  drawOnChartArea : true,
+                  drawTicks: false,
+                  drawBorder: false     
+              },
+            type:'linear',
+            id:'left-axis',
+            scaleLabel: {
+              display: false,
+              labelString: 'Clicks',
+              fontColor : this.clicksColor
+            },
+            display: true,
+            ticks: {
+                fontColor: this.valuesColor,
+                beginAtZero: true,
+                /*callback: function(label, index, labels) {
+                  // when the floored value is the same as the value we have a whole number
+                  if (Math.floor(label) === label) {
+                      return label;
+                  }
+                },*/
+                max: maxClicks, // Diff from
+                min: 0,
+                stepSize: clicksStep,
+                padding: 10
+              }
+          },{
+            type:'linear',
+            id:'right-axis',
+            display: true,
+            position: 'right',
+            stacked:false,
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              drawOnChartArea: false, // Diff
+              display: true, // none
+              tickMarkLength: 6, // To avoid "|- 16" at right
+              drawTicks: false,
+              drawBorder: false
+            },
+            ticks: {
+                fontColor: this.valuesColor,
+                beginAtZero: true,
+                /*callback: function(label, index, labels) {
+                  // when the floored value is the same as the value we have a whole number
+                  if (Math.floor(label) === label) {
+                      return label;
+                  }
+                },*/
+                max: maxPushes,
+                min: 0,
+                stepSize: pushesStep,
+                padding: 10
+              }
+          }]
+      }
+    };
+  }
+
+
   constructor() { 
     
   }
 
   ngOnInit() {
+    this.barChartOptions = this.getChartDefaultOptions(23, 10);
     /*Chart.pluginService.register({
       afterDraw: function (chart) {
         return;
